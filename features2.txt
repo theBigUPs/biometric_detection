@@ -1,0 +1,29 @@
+1. Pose and Alignment
+   X Frontal Face: The face must be upright and facing directly toward the camera. Any tilt (yaw, pitch, or roll) should be minimal, generally not exceeding ±5 degrees.
+   X Symmetry: The face should be symmetrical along the vertical midline, with both eyes, ears, and other features aligned properly.
+   X Head Position: The face should not be turned or tilted excessively. Head position must be near 90 degrees relative to the camera.
+2. Image Resolution and Quality
+   X Resolution: The image must have sufficient resolution to clearly capture facial features, such as the eyes, nose, and mouth. Typically, a resolution of at least 300 pixels in height for the face is required.
+   X Sharpness: The image should be sharp and in focus, with no motion blur.
+   X Brightness and Contrast: The face should be evenly lit with good contrast between the face and the background. There should be no excessive shadows or overexposure.
+3. Facial Coverage and Proportions
+   X Face Coverage: The face should occupy 70-80% of the image height. The entire face, from the top of the forehead (or hairline) to the bottom of the chin, must be clearly visible.
+   X Feature Visibility: All critical facial features (eyes, nose, mouth, chin) must be visible without obstruction by hair, clothing, or accessories.
+   X Eyes: Both eyes should be fully visible, open, and clearly detected.
+4. Geometric Proportions
+   X Inter-eye Distance: The distance between the eyes should be proportional to the image size. A typical minimum of 90 pixels is expected between the eyes.
+    Eye-to-Nose Distance: The distance from the eyes to the nose must be proportional to the inter-eye distance.
+    Nose-to-Mouth Distance: The distance from the nose to the upper lip must also adhere to standard proportions (typically about 0.6 to 0.8 times the inter-eye distance).
+   X Face Symmetry: The left and right sides of the face should appear relatively symmetrical (no significant tilt, shadowing, or distortion).
+5. Expression
+    Neutral Expression: The subject should have a neutral expression with the mouth closed and the eyes open. Smiling, frowning, or exaggerated expressions are not acceptable as they may distort biometric features.
+  X  No Obstructions: The face should not be obscured by accessories (e.g., hats, glasses, or jewelry) unless the accessories are medically or religiously required.
+6. Lighting Conditions
+  X  Even Lighting: The face must be lit uniformly. Shadows should be minimal, especially around the eyes, nose, and mouth.
+  X  No Glare: There should be no glare or reflections on the face (e.g., from glasses). If glasses are worn, they should not obscure the eyes.
+7. Background and Framing
+  X  Plain Background: The background should be uniform, light-colored, and free from distractions or patterns that might interfere with face detection.
+  X  Centered Face: The face should be centered in the image, with sufficient space around the head (but not excessively large margins).
+8. Accessories and Headgear
+   X Glasses: Glasses are acceptable, but they must not obstruct the eyes or cause reflections or glare.
+   X Headgear: Headgear (such as hats or scarves) is only acceptable if worn for medical or religious purposes. It must not cover any facial features like the eyes, nose, or mouth.

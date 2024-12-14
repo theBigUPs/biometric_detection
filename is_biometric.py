@@ -1,0 +1,143 @@
+import cv2
+import mediapipe as mp
+import numpy as np
+
+def check_background(image,threshold=80):
+    std_dev = np.std(image)
+
+    # Check if the standard deviation is below the threshold
+    if std_dev < threshold:
+        return True,std_dev  # Uniform background
+    else:
+        return False,std_dev  # Non-uniform background
+
+
+def is_in_focus(image,threshold=100):
+    '''Use Laplacian variance to measure focus (higher variance indicates better sharpness)'''
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    return laplacian_var > threshold 
+
+def check_noise(image,threshold=10):
+    '''Ensure the noise level is low. Use Gaussian blur to check for excessive noise'''
+    blurred = cv2.GaussianBlur(image, (5, 5), 0)
+    diff = cv2.absdiff(image, blurred)
+    return diff.std() < threshold 
+
+
+def enhance_lighting(image):
+    ''' enhances lighting to make face detection easier'''
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    equalized = cv2.equalizeHist(gray)
+    return cv2.cvtColor(equalized, cv2.COLOR_GRAY2BGR) 
+
+def check_face_area(image, min_percentage=30):
+    # Initialize MediaPipe Face Detection
+    mp_face_detection = mp.solutions.face_detection
+    face_detection = mp_face_detection.FaceDetection(min_detection_confidence=0.7)
+
+    # Convert the image to RGB for MediaPipe
+    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = face_detection.process(rgb_image)
+
+    if results.detections:
+        # Get the first face bounding box
+        bboxC = results.detections[0].location_data.relative_bounding_box
+        ih, iw, _ = image.shape
+        
+        # Convert relative bounding box to actual pixel values
+        x, y, w, h = int(bboxC.xmin * iw), int(bboxC.ymin * ih), int(bboxC.width * iw), int(bboxC.height * ih)
+
+        # Calculate the area of the face and the total image area
+        face_area = w * h
+        image_area = iw * ih
+        face_percentage = (face_area / image_area) * 100
+
+        #print(f"Face Area: {face_area}, Image Area: {image_area}, Percentage: {face_percentage}%")  # Debugging
+
+        return face_percentage >= min_percentage,face_percentage
+    #return False
+
+def check_features(landmark_dict):
+
+    '''
+    checks if these landmarks are present in the landmarks dict 
+    Left Eye	33 (outer), 133 (inner), 159/145 (center)
+    Right Eye	263 (outer), 362 (inner), 386/374 (center)
+    Nose Tip	1
+    Left Nostril	98
+    Right Nostril	327
+    Upper Lip Center	13
+    Lower Lip Center	14
+    Left Mouth Corner	61
+    Right Mouth Corner	291
+    Chin Tip	152
+    Left Jawline	234
+    Right Jawline	454
+    Left Eyebrow	105 (outer), 66 (inner)
+    Right Eyebrow	334 (outer), 296 (inner)
+    Forehead Center	10
+    Left Forehead Edge	127
+    Right Forehead Edge	356
+    Left Ear	234
+    Right Ear	454   
+    '''
+    landmark_list=[33,133,159,145,263,362,386,374,1,98,327
+                   ,13,14,61,291,152,234,454,105,66,334,296,10,127,356,234,454]
+    for item in landmark_list:
+        if item not in landmark_dict:
+            return False
+
+
+    return True
+
+
+def calculate_inter_eye_distance(landmarks_dict, image_width, image_height, threshold):
+    '''checks if the inter eye distance is at least 90 pixels as per spec'''
+    # Left eye (133) and right eye (362)
+    left_eye = landmarks_dict[133]
+    right_eye = landmarks_dict[362]
+    left_eye_pixel = (left_eye[0] * image_width, left_eye[1] * image_height)
+    right_eye_pixel = (right_eye[0] * image_width, right_eye[1] * image_height)
+
+    # Calculate Euclidean distance in pixels
+    distance = ((left_eye_pixel[0] - right_eye_pixel[0])**2 +
+                (left_eye_pixel[1] - right_eye_pixel[1])**2)**0.5
+
+    return distance >= threshold, distance
+
+
+def check_eye_open(landmarks_dict, image_width, image_height, eye='left', threshold=0.3):
+    """
+    Checks if the specified eye is open based on MediaPipe landmarks.
+    """
+    if eye == 'left':
+        upper_lid = landmarks_dict[159]  # Upper eyelid
+        lower_lid = landmarks_dict[145]  # Lower eyelid
+        inner_corner = landmarks_dict[133]  # Inner corner
+        outer_corner = landmarks_dict[33]  # Outer corner
+    elif eye == 'right':
+        upper_lid = landmarks_dict[386]  # Upper eyelid
+        lower_lid = landmarks_dict[374]  # Lower eyelid
+        inner_corner = landmarks_dict[362]  # Inner corner
+        outer_corner = landmarks_dict[263]  # Outer corner
+    else:
+        raise ValueError("Invalid eye specified. Use 'left' or 'right'.")
+    
+    # Convert normalized coordinates to pixel coordinates
+    upper_lid_y = upper_lid[1] * image_height
+    lower_lid_y = lower_lid[1] * image_height
+    inner_corner_x = inner_corner[0] * image_width
+    outer_corner_x = outer_corner[0] * image_width
+
+    # Calculate vertical distance between upper and lower eyelids
+    eye_open_distance = abs(upper_lid_y - lower_lid_y)
+
+    # Calculate horizontal eye width
+    eye_width = abs(inner_corner_x - outer_corner_x)
+
+    # Normalize the vertical distance by the eye width
+    normalized_distance = eye_open_distance / eye_width
+
+    # Check if the eye is open
+    return normalized_distance > threshold
