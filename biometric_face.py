@@ -1,8 +1,8 @@
 
-import check_pic as check
 import is_biometric as ib
-import cv2
-import mediapipe as mp
+import measure_distance as md
+#import cv2
+#import mediapipe as mp
 '''
 # Initialize Mediapipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
@@ -94,11 +94,11 @@ mp_face_detection = mp.solutions.face_detection
 
 
 def main():
-    image = check.load_image("tt6.jpg")
+    image = ib.load_image("tt6.jpg")
     height, width, channels = image.shape
     
-    img_dict = check.get_facial_features(image)
-    bigger_than_90, dist = ib.calculate_inter_eye_distance(img_dict,width,height,90)
+    img_dict = ib.get_facial_features(image)
+    #bigger_than_90, dist = ib.calculate_inter_eye_distance(img_dict,width,height,90)
     #left_eye = ib.check_eye_open(img_dict,width,height,"left")
     #right_eye = ib.check_eye_open(img_dict,width,height,"right")
     #print(img_dict)
@@ -109,7 +109,7 @@ def main():
     #sym = check.check_face_symmetry(img_dict,width,height,5)
     #print(left_eye)
     #print(right_eye)
-    features_present = ib.check_features(img_dict)
+    #features_present = ib.check_features(img_dict)
     
     #print(dist)
     #print(features_present)
@@ -121,10 +121,13 @@ def main():
     
     
     
-    face_area,ratio = ib.check_face_area(image,70)
-    print(f"features:{features_present}     res:{bigger_than_90}     area:{face_area}      ratio:{ratio}")
+    #face_area,ratio = ib.check_face_area(image,70)
+    #print(f"features:{features_present}     res:{bigger_than_90}     area:{face_area}      ratio:{ratio}")
     #features_present = ib.check_features(img_dict)
     #print(f"back:{back}   backdev:{dev}  focus:{focus}   noise:{noise}   features:{features_present}")
+    #print(img_dict[168])
+    #inter = md.interpupilary(img_dict)
+    #print(inter)
 
 
 if __name__ == "__main__":
