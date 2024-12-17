@@ -1,6 +1,7 @@
 #import cv2
-import mediapipe as mp
-import math
+#import mediapipe as mp
+#import math
+from face_detection import math
 
 ''' 
 FEATURES NOT YET INCLUDED:
@@ -90,41 +91,96 @@ def nose_to_chin(landmark_dict):
 
     return vertical_distance_normalized
 
-def mouth_width():
+def mouth_width(landmark_dict):
     '''Horizontal width of the mouth (distance between the corners of the mouth).'''
     #Left Mouth Corner	61
     #Right Mouth Corner	291
-    pass
+    left_mouth_corner = landmark_dict[61]
+    right_mouth_corner = landmark_dict[291]
 
-def mouth_to_chin():
+    horizontal_distance_normalized = abs(left_mouth_corner[0] - right_mouth_corner[0])
+
+    return horizontal_distance_normalized
+
+def mouth_to_chin(landmark_dict):
     '''Vertical distance from the center of the mouth to the chin.'''
-    pass
+    mouth_center = landmark_dict[13]
+    chin_tip = landmark_dict[152]
+    vertical_distance_normalized = abs(mouth_center[1] - chin_tip[1])
 
-def face_width():
-    '''Horizontal width of the face at the widest point near the cheekbones.'''
-    pass
+    return vertical_distance_normalized
 
-def face_height():
+
+def face_height(landmark_dict):
     '''Vertical distance from the top of the forehead (hairline) to the chin.'''
-    pass
+    forehead = landmark_dict[10]  # Forehead (near hairline) landmark
+    chin_tip = landmark_dict[152]  # Chin landmark
 
-def ear_to_ear():
+    # Calculate the vertical distance (difference in y-coordinates)
+    vertical_distance_normalized = abs(chin_tip[1] - forehead[1])
+
+    return vertical_distance_normalized
+
+def ear_to_ear(landmark_dict):
     '''Horizontal distance between the outer edges of both ears.'''
-    pass
+    left_ear = landmark_dict[234]  # Left ear outer edge landmark
+    right_ear = landmark_dict[454]  # Right ear outer edge landmark
 
-def eyebrow_to_eye():
+    # Calculate the horizontal distance (difference in x-coordinates)
+    horizontal_distance_normalized = abs(right_ear[0] - left_ear[0])
+
+    return horizontal_distance_normalized
+
+def eyebrow_to_eye(landmark_dict):
     '''Vertical distance from the center of the eyebrows to the center of the eyes.'''
-    pass
+    left_eyebrow = landmark_dict[70]  # Left eyebrow center
+    right_eyebrow = landmark_dict[300]  # Right eyebrow center
+    left_eye = landmark_dict[468]  # Left eye center
+    right_eye = landmark_dict[473]  # Right eye center
 
-def eyebrow_len():
+    # Calculate vertical distances (difference in y-coordinates)
+    left_vertical_distance = abs(left_eye[1] - left_eyebrow[1])
+    right_vertical_distance = abs(right_eye[1] - right_eyebrow[1])
+
+    return left_vertical_distance, right_vertical_distance
+
+def eyebrow_len(landmark_dict):
     '''Horizontal length of each eyebrow.'''
-    pass
+    left_eyebrow_start = landmark_dict[33]  # Left eyebrow start (inner)
+    left_eyebrow_end = landmark_dict[133]  # Left eyebrow end (outer)
+    
+    right_eyebrow_start = landmark_dict[362]  # Right eyebrow start (inner)
+    right_eyebrow_end = landmark_dict[263]  # Right eyebrow end (outer)
 
-def forehead_height():
+    # Calculate the horizontal distance (difference in x-coordinates) for each eyebrow
+    left_eyebrow_length_normalized = abs(left_eyebrow_end[0] - left_eyebrow_start[0])
+    right_eyebrow_length_normalized = abs(right_eyebrow_end[0] - right_eyebrow_start[0])
+
+    return left_eyebrow_length_normalized, right_eyebrow_length_normalized
+
+def forehead_height(landmark_dict):
     '''Vertical distance from the hairline to the brow line.'''
-    pass
+    hairline = landmark_dict[10]  # Hairline (near top of forehead)
+    left_brow = landmark_dict[70]  # Left eyebrow (middle of the brow)
+    right_brow = landmark_dict[300]  # Right eyebrow (middle of the brow)
 
-def jawline_width():
+    # Calculate the average y-coordinate of the brow line (average of left and right eyebrow)
+    brow_line_y = (left_brow[1] + right_brow[1]) / 2
+
+    # Calculate the vertical distance (difference in y-coordinates)
+    vertical_distance_normalized = abs(brow_line_y - hairline[1])
+
+    return vertical_distance_normalized
+
+def jawline_width(landmark_dict):
     '''Distance between the angles of the mandible (jawbone).'''
-    pass
+    left_jaw_angle = landmark_dict[234]  # Left jaw angle (normalized)
+    right_jaw_angle = landmark_dict[454]  # Right jaw angle (normalized)
+
+    # Calculate the Euclidean distance between the left and right jaw angles
+    distance_normalized = math.sqrt(
+        (right_jaw_angle[0] - left_jaw_angle[0]) ** 2 + (right_jaw_angle[1] - left_jaw_angle[1]) ** 2
+    )
+
+    return distance_normalized
 

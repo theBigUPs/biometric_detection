@@ -1,6 +1,6 @@
-import cv2
-import mediapipe as mp
-import numpy as np
+from face_detection import np
+from face_detection import mp
+from face_detection import cv2
 
 def check_background(image,threshold=80):
     std_dev = np.std(image)
@@ -74,19 +74,26 @@ def check_features(landmark_dict):
     Chin Tip	152
     Left Jawline	234
     Right Jawline	454
+    Left Ear	234
+    Right Ear	454   
     Left Eyebrow	105 (outer), 66 (inner)
     Right Eyebrow	334 (outer), 296 (inner)
     Forehead Center	10
     Left Forehead Edge	127
-    Right Forehead Edge	356
-    Left Ear	234
-    Right Ear	454   
+    Right Forehead Edge	356  
     Left Iris  468
     Right Iris  473
     Nose Base 168
+    Left Eyebrow 70
+    Right Eyebrow 300
+    left_eyebrow_start 33
+    left_eyebrow_end 133
+    right_eyebrow_start 362
+    right_eyebrow_end 263
     '''
     landmark_list=[33,133,159,145,263,362,386,374,1,98,327
-                   ,13,14,61,291,152,234,454,105,66,334,296,10,127,356,234,454,468,473,168]
+                   ,13,14,61,291,152,105,66,334,296,
+                   10,127,356,234,454,468,473,168,70,300,33,133,362,263]
     for item in landmark_list:
         if item not in landmark_dict:
             return False
