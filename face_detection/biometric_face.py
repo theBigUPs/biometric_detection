@@ -92,7 +92,7 @@ mp_face_detection = mp.solutions.face_detection
 
 """
 
-
+'''pip freeze > requirements.txt '''
 def main():
     image = ib.load_image("tt6.jpg")
     height, width, channels = image.shape
