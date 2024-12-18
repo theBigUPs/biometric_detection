@@ -1,10 +1,10 @@
-#import cv2
-#import mediapipe as mp
-#import math
-from face_detection import math
+import cv2
+import mediapipe as mp
+import math
+
 
 ''' 
-FEATURES NOT YET INCLUDED:
+FEATURES NOT INCLUDED:
 
 Golden Ratio: Proportions based on the "phi" ratio, such as the width-to-height ratio of the face.
 Jawline Angle: Angle formed between the chin and the jawline on both sides.

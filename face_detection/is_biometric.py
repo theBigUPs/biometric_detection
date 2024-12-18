@@ -1,18 +1,19 @@
-from face_detection import np
-from face_detection import mp
-from face_detection import cv2
+import cv2
+import mediapipe as mp
+import numpy as np
 
 def check_background(image,threshold=80):
+    '''checks if the image background in uniform'''
     std_dev = np.std(image)
 
     # Check if the standard deviation is below the threshold
     if std_dev < threshold:
-        return True,std_dev  # Uniform background
+        return True  # Uniform background
     else:
-        return False,std_dev  # Non-uniform background
+        return False  # Non-uniform background
 
 
-def is_in_focus(image,threshold=100):
+def is_in_focus(image,threshold=150):
     '''Use Laplacian variance to measure focus (higher variance indicates better sharpness)'''
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
@@ -114,7 +115,7 @@ def calculate_inter_eye_distance(landmarks_dict, image_width, image_height, thre
     distance = ((left_eye_pixel[0] - right_eye_pixel[0])**2 +
                 (left_eye_pixel[1] - right_eye_pixel[1])**2)**0.5
 
-    return distance >= threshold, distance
+    return distance >= threshold
 
 
 def check_eye_open(landmarks_dict, image_width, image_height, eye='left', threshold=0.3):
@@ -185,7 +186,9 @@ def get_facial_features(image):
     return landmarks_dict
 
 
-def check_tilt(landmarks_dict,image_width,image_height):#image
+def check_tilt(landmarks_dict,image_width,image_height,threshold=5):#image
+    '''checks the facial tilt of the face and returns pith yaw and roll. the pitch should be 
+        ignored if using a picture or video as it is 2 dimensional'''
     model_points = np.array([
         (0.0, 0.0, 0.0),       # Nose tip
         (0.0, -330.0, -65.0),  # Chin
@@ -231,16 +234,16 @@ def check_tilt(landmarks_dict,image_width,image_height):#image
     roll = np.degrees(np.arctan2(rotation_matrix[1][0], rotation_matrix[0][0]))
 
     # Return the Euler angles
-    return {"pitch": pitch, "yaw": yaw, "roll": roll}
+    return yaw<threshold and roll<threshold#{"pitch": pitch, "yaw": yaw, "roll": roll}
 
 
 def calculate_distance(point1, point2):
     """Calculate the Euclidean distance between two 2D points (ignoring z-axis)."""
     return np.linalg.norm(np.array([point1[0], point1[1]]) - np.array([point2[0], point2[1]]))
 
-def check_face_symmetry(landmarks_dict, image_width, image_height, tolerance=5):
+def check_face_symmetry(landmarks_dict, image_width, image_height, tolerance=12):
 
-    # Midline reference point: let's use the nose as the central reference
+    # Midline reference point: the nose as the central reference
     nose_tip = landmarks_dict[1]  # Nose tip (landmark 1 in MediaPipe)
     
     # Calculate the centerline x-coordinate based on the nose (this will be used as reference)
@@ -276,10 +279,5 @@ def check_face_symmetry(landmarks_dict, image_width, image_height, tolerance=5):
         if abs(left_deviation - right_deviation) > tolerance:
             #symmetry_violations.append(f"Asymmetry detected: {left_key} vs {right_key}")
             return False
-    
-    # Return True if no violations, otherwise return False and the violations
-    # if symmetry_violations:
-    #     return False
-    # else:
-    #     return True
+        
     return True
