@@ -118,7 +118,7 @@ def calculate_inter_eye_distance(landmarks_dict, image_width, image_height, thre
     return distance >= threshold
 
 
-def check_eye_open(landmarks_dict, image_width, image_height, eye='left', threshold=0.3):
+def check_eye_open(landmarks_dict, image_width, image_height, eye='left', threshold=0.1):
     """
     Checks if the specified eye is open based on MediaPipe landmarks.
     """
@@ -186,7 +186,7 @@ def get_facial_features(image):
     return landmarks_dict
 
 
-def check_tilt(landmarks_dict,image_width,image_height,threshold=5):#image
+def check_tilt(landmarks_dict,image_width,image_height,threshold=10):#image
     '''checks the facial tilt of the face and returns pith yaw and roll. the pitch should be 
         ignored if using a picture or video as it is 2 dimensional'''
     model_points = np.array([

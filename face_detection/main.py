@@ -86,8 +86,8 @@ def get_facenet_result(image_path1,image_path2):
     return em.embeddings(image_path1,image_path2)
 
 def main():
-    image = ib.load_image(f"face_detection\\tt6.jpg")
-    image2 = ib.load_image(f"face_detection\\tt2.jpg")
+    image = ib.load_image(f"face_detection\\tt2.JPG")
+    image2 = ib.load_image(f"face_detection\\tt3.JPG")
 
 
     
@@ -117,8 +117,11 @@ def main():
         facenet=get_facenet_result(image,image2)
         if facenet and res:
             print("the faces match")
+            
         else:
             print("no match found")
+            print(facenet)
+            print(res) 
     
     
 
